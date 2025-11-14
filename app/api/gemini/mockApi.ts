@@ -1,0 +1,636 @@
+import fs from 'fs';
+import path from 'path';
+
+// Mock dataset (combine all 5 chunks of jobs 1-50 here)
+const jobs = [
+    {
+        "count": 50,
+        "generatedAt": "2025-11-13T15:00:00Z",
+        "jobs": [
+          {
+            "id": "job-001",
+            "title": "Software Engineer",
+            "company": "BrightLabs",
+            "location": "San Francisco, CA, USA",
+            "industry": "Technology",
+            "seniority": "Entry",
+            "employmentType": "Full-time",
+            "description": "Join BrightLabs to build innovative web applications using modern JavaScript frameworks.",
+            "postedDate": "2025-11-01",
+            "applyUrl": "https://brightlabs.com/careers/001"
+          },
+          {
+            "id": "job-002",
+            "title": "Marketing Coordinator",
+            "company": "GreenLeaf Foods",
+            "location": "Austin, TX, USA",
+            "industry": "Food & Beverage",
+            "seniority": "Entry",
+            "employmentType": "Full-time",
+            "description": "Assist in executing marketing campaigns and social media strategies for GreenLeaf Foods.",
+            "postedDate": "2025-11-03",
+            "applyUrl": "https://greenleaffoods.com/careers/002"
+          },
+          {
+            "id": "job-003",
+            "title": "Financial Analyst",
+            "company": "Pinnacle Finance Group",
+            "location": "New York, NY, USA",
+            "industry": "Finance",
+            "seniority": "Entry",
+            "employmentType": "Full-time",
+            "description": "Support the finance team with budget analysis, forecasting, and reporting.",
+            "postedDate": "2025-11-02",
+            "applyUrl": "https://pinnaclefinance.com/careers/003"
+          },
+          {
+            "id": "job-004",
+            "title": "Registered Nurse",
+            "company": "HealthFirst Medical",
+            "location": "Chicago, IL, USA",
+            "industry": "Healthcare",
+            "seniority": "Entry",
+            "employmentType": "Full-time",
+            "description": "Provide patient care in a dynamic hospital environment at HealthFirst Medical.",
+            "postedDate": "2025-11-04",
+            "applyUrl": "https://healthfirstmedical.com/careers/004"
+          },
+          {
+            "id": "job-005",
+            "title": "Sales Associate",
+            "company": "UrbanStyle Retail",
+            "location": "Seattle, WA, USA",
+            "industry": "Retail",
+            "seniority": "Entry",
+            "employmentType": "Part-time",
+            "description": "Engage with customers and help drive sales in our UrbanStyle stores.",
+            "postedDate": "2025-11-01",
+            "applyUrl": "https://urbanstyleretail.com/careers/005"
+          },
+          {
+            "id": "job-006",
+            "title": "Junior Data Analyst",
+            "company": "Insight Analytics",
+            "location": "Boston, MA, USA",
+            "industry": "Analytics",
+            "seniority": "Entry",
+            "employmentType": "Full-time",
+            "description": "Analyze datasets and create reports to support business decisions.",
+            "postedDate": "2025-11-05",
+            "applyUrl": "https://insightanalytics.com/careers/006"
+          },
+          {
+            "id": "job-007",
+            "title": "Customer Service Representative",
+            "company": "GlobalConnect Telecom",
+            "location": "Dallas, TX, USA",
+            "industry": "Telecommunications",
+            "seniority": "Entry",
+            "employmentType": "Full-time",
+            "description": "Assist customers with inquiries and provide solutions for telecom services.",
+            "postedDate": "2025-11-03",
+            "applyUrl": "https://globalconnect.com/careers/007"
+          },
+          {
+            "id": "job-008",
+            "title": "Lab Technician",
+            "company": "BioTech Solutions",
+            "location": "San Diego, CA, USA",
+            "industry": "Biotechnology",
+            "seniority": "Entry",
+            "employmentType": "Full-time",
+            "description": "Support research projects by performing laboratory experiments and documentation.",
+            "postedDate": "2025-11-06",
+            "applyUrl": "https://biotechsolutions.com/careers/008"
+          },
+          {
+            "id": "job-009",
+            "title": "Graphic Designer",
+            "company": "CreativeHive Agency",
+            "location": "Portland, OR, USA",
+            "industry": "Marketing & Advertising",
+            "seniority": "Entry",
+            "employmentType": "Contract",
+            "description": "Design visual content for digital and print campaigns for CreativeHive clients.",
+            "postedDate": "2025-11-02",
+            "applyUrl": "https://creativehive.com/careers/009"
+          },
+          {
+            "id": "job-010",
+            "title": "IT Support Technician",
+            "company": "NextGen Tech",
+            "location": "Atlanta, GA, USA",
+            "industry": "Technology",
+            "seniority": "Entry",
+            "employmentType": "Full-time",
+            "description": "Provide IT support for internal teams, troubleshoot hardware and software issues.",
+            "postedDate": "2025-11-05",
+            "applyUrl": "https://nextgentech.com/careers/010"
+          }
+        ]
+      },
+      {
+        "jobs": [
+          {
+            "id": "job-011",
+            "title": "Marketing Associate",
+            "company": "EcoWave Energy",
+            "location": "Denver, CO, USA",
+            "industry": "Renewable Energy",
+            "seniority": "Associate",
+            "employmentType": "Full-time",
+            "description": "Assist in marketing campaigns promoting sustainable energy solutions.",
+            "postedDate": "2025-11-07",
+            "applyUrl": "https://ecowaveenergy.com/careers/011"
+          },
+          {
+            "id": "job-012",
+            "title": "HR Associate",
+            "company": "FinSecure Corp",
+            "location": "Charlotte, NC, USA",
+            "industry": "Finance",
+            "seniority": "Associate",
+            "employmentType": "Full-time",
+            "description": "Support HR operations including recruitment, onboarding, and employee engagement.",
+            "postedDate": "2025-11-06",
+            "applyUrl": "https://finsecure.com/careers/012"
+          },
+          {
+            "id": "job-013",
+            "title": "Software Developer",
+            "company": "NeuroTech Labs",
+            "location": "San Francisco, CA, USA",
+            "industry": "Healthcare Technology",
+            "seniority": "Mid-level",
+            "employmentType": "Full-time",
+            "description": "Develop healthcare applications with an emphasis on AI-driven diagnostics.",
+            "postedDate": "2025-11-08",
+            "applyUrl": "https://neurotechlabs.com/careers/013"
+          },
+          {
+            "id": "job-014",
+            "title": "Business Analyst",
+            "company": "OmniRetail Solutions",
+            "location": "Chicago, IL, USA",
+            "industry": "Retail",
+            "seniority": "Associate",
+            "employmentType": "Full-time",
+            "description": "Analyze business processes and provide insights for improving retail operations.",
+            "postedDate": "2025-11-07",
+            "applyUrl": "https://omniretail.com/careers/014"
+          },
+          {
+            "id": "job-015",
+            "title": "Product Manager",
+            "company": "TechNova Innovations",
+            "location": "Austin, TX, USA",
+            "industry": "Technology",
+            "seniority": "Mid-level",
+            "employmentType": "Full-time",
+            "description": "Oversee product lifecycle from ideation to launch in a fast-paced tech environment.",
+            "postedDate": "2025-11-06",
+            "applyUrl": "https://technova.com/careers/015"
+          },
+          {
+            "id": "job-016",
+            "title": "Financial Advisor",
+            "company": "WealthWise Partners",
+            "location": "New York, NY, USA",
+            "industry": "Finance",
+            "seniority": "Mid-level",
+            "employmentType": "Full-time",
+            "description": "Provide clients with investment strategies and financial planning solutions.",
+            "postedDate": "2025-11-08",
+            "applyUrl": "https://wealthwise.com/careers/016"
+          },
+          {
+            "id": "job-017",
+            "title": "Operations Coordinator",
+            "company": "Global Freight Solutions",
+            "location": "Los Angeles, CA, USA",
+            "industry": "Logistics",
+            "seniority": "Associate",
+            "employmentType": "Full-time",
+            "description": "Coordinate shipments, manage logistics schedules, and optimize operations workflow.",
+            "postedDate": "2025-11-07",
+            "applyUrl": "https://globalfreight.com/careers/017"
+          },
+          {
+            "id": "job-018",
+            "title": "UX Designer",
+            "company": "BrightWave Digital",
+            "location": "Seattle, WA, USA",
+            "industry": "Technology",
+            "seniority": "Mid-level",
+            "employmentType": "Full-time",
+            "description": "Design user interfaces and enhance digital experiences for mobile and web applications.",
+            "postedDate": "2025-11-06",
+            "applyUrl": "https://brightwave.com/careers/018"
+          },
+          {
+            "id": "job-019",
+            "title": "Clinical Research Associate",
+            "company": "MediCore Pharma",
+            "location": "Philadelphia, PA, USA",
+            "industry": "Pharmaceuticals",
+            "seniority": "Associate",
+            "employmentType": "Full-time",
+            "description": "Monitor clinical trials and ensure compliance with regulatory standards.",
+            "postedDate": "2025-11-08",
+            "applyUrl": "https://medicorepharma.com/careers/019"
+          },
+          {
+            "id": "job-020",
+            "title": "Digital Marketing Specialist",
+            "company": "AdVantage Media",
+            "location": "Miami, FL, USA",
+            "industry": "Marketing & Advertising",
+            "seniority": "Mid-level",
+            "employmentType": "Full-time",
+            "description": "Manage digital campaigns, SEO, and social media strategies for clients.",
+            "postedDate": "2025-11-07",
+            "applyUrl": "https://advantagemedia.com/careers/020"
+          }
+        ]
+      },
+      {
+        "jobs": [
+          {
+            "id": "job-021",
+            "title": "Senior Software Engineer",
+            "company": "NextGen AI",
+            "location": "San Francisco, CA, USA",
+            "industry": "Technology",
+            "seniority": "Senior",
+            "employmentType": "Full-time",
+            "description": "Lead the development of AI-powered applications and mentor junior engineers.",
+            "postedDate": "2025-11-08",
+            "applyUrl": "https://nextgenai.com/careers/021"
+          },
+          {
+            "id": "job-022",
+            "title": "Lead Data Scientist",
+            "company": "HealthMetrics",
+            "location": "Boston, MA, USA",
+            "industry": "Healthcare",
+            "seniority": "Lead",
+            "employmentType": "Full-time",
+            "description": "Oversee data science projects, model development, and provide actionable insights.",
+            "postedDate": "2025-11-07",
+            "applyUrl": "https://healthmetrics.com/careers/022"
+          },
+          {
+            "id": "job-023",
+            "title": "Senior Product Manager",
+            "company": "FinTech Pro",
+            "location": "New York, NY, USA",
+            "industry": "Finance",
+            "seniority": "Senior",
+            "employmentType": "Full-time",
+            "description": "Lead product strategy, roadmap planning, and cross-functional team alignment.",
+            "postedDate": "2025-11-06",
+            "applyUrl": "https://fintechpro.com/careers/023"
+          },
+          {
+            "id": "job-024",
+            "title": "Lead UX Designer",
+            "company": "CreativeWorks Studio",
+            "location": "Los Angeles, CA, USA",
+            "industry": "Marketing & Design",
+            "seniority": "Lead",
+            "employmentType": "Full-time",
+            "description": "Direct UX design for major client projects and mentor the design team.",
+            "postedDate": "2025-11-08",
+            "applyUrl": "https://creativeworks.com/careers/024"
+          },
+          {
+            "id": "job-025",
+            "title": "Senior Marketing Manager",
+            "company": "GlobalBrand Solutions",
+            "location": "Chicago, IL, USA",
+            "industry": "Marketing & Advertising",
+            "seniority": "Senior",
+            "employmentType": "Full-time",
+            "description": "Develop marketing strategies for brand campaigns and oversee the marketing team.",
+            "postedDate": "2025-11-07",
+            "applyUrl": "https://globalbrand.com/careers/025"
+          },
+          {
+            "id": "job-026",
+            "title": "Lead Operations Manager",
+            "company": "RapidLogistics",
+            "location": "Atlanta, GA, USA",
+            "industry": "Logistics",
+            "seniority": "Lead",
+            "employmentType": "Full-time",
+            "description": "Manage operations, optimize supply chain processes, and lead regional teams.",
+            "postedDate": "2025-11-06",
+            "applyUrl": "https://rapidlogistics.com/careers/026"
+          },
+          {
+            "id": "job-027",
+            "title": "Senior Financial Analyst",
+            "company": "CapitalVision",
+            "location": "Houston, TX, USA",
+            "industry": "Finance",
+            "seniority": "Senior",
+            "employmentType": "Full-time",
+            "description": "Analyze financial data, create forecasts, and guide investment decisions.",
+            "postedDate": "2025-11-08",
+            "applyUrl": "https://capitalvision.com/careers/027"
+          },
+          {
+            "id": "job-028",
+            "title": "Lead Software Architect",
+            "company": "CloudSphere Tech",
+            "location": "Seattle, WA, USA",
+            "industry": "Technology",
+            "seniority": "Lead",
+            "employmentType": "Full-time",
+            "description": "Design scalable software architecture and lead engineering teams.",
+            "postedDate": "2025-11-07",
+            "applyUrl": "https://cloudsphere.com/careers/028"
+          },
+          {
+            "id": "job-029",
+            "title": "Senior Data Engineer",
+            "company": "DataWorks Inc",
+            "location": "Austin, TX, USA",
+            "industry": "Technology",
+            "seniority": "Senior",
+            "employmentType": "Full-time",
+            "description": "Build and maintain data pipelines and ensure data quality for analytics projects.",
+            "postedDate": "2025-11-06",
+            "applyUrl": "https://dataworks.com/careers/029"
+          },
+          {
+            "id": "job-030",
+            "title": "Lead Clinical Research Scientist",
+            "company": "BioMed Innovations",
+            "location": "Philadelphia, PA, USA",
+            "industry": "Pharmaceuticals",
+            "seniority": "Lead",
+            "employmentType": "Full-time",
+            "description": "Lead clinical research projects, ensure regulatory compliance, and manage research teams.",
+            "postedDate": "2025-11-08",
+            "applyUrl": "https://biomedinnovations.com/careers/030"
+          }
+        ]
+      },
+      {
+        "jobs": [
+          {
+            "id": "job-031",
+            "title": "Mid-level Software Engineer",
+            "company": "TechNova",
+            "location": "Denver, CO, USA",
+            "industry": "Technology",
+            "seniority": "Mid-level",
+            "employmentType": "Full-time",
+            "description": "Develop web applications, collaborate with senior engineers, and maintain code quality.",
+            "postedDate": "2025-11-09",
+            "applyUrl": "https://technova.com/careers/031"
+          },
+          {
+            "id": "job-032",
+            "title": "Associate Data Analyst",
+            "company": "MarketInsights",
+            "location": "Chicago, IL, USA",
+            "industry": "Marketing & Analytics",
+            "seniority": "Associate",
+            "employmentType": "Full-time",
+            "description": "Analyze marketing datasets, create dashboards, and assist in reporting insights.",
+            "postedDate": "2025-11-09",
+            "applyUrl": "https://marketinsights.com/careers/032"
+          },
+          {
+            "id": "job-033",
+            "title": "Mid-level UX Designer",
+            "company": "PixelPerfect",
+            "location": "Austin, TX, USA",
+            "industry": "Design",
+            "seniority": "Mid-level",
+            "employmentType": "Full-time",
+            "description": "Design user interfaces, collaborate with product teams, and conduct usability testing.",
+            "postedDate": "2025-11-08",
+            "applyUrl": "https://pixelperfect.com/careers/033"
+          },
+          {
+            "id": "job-034",
+            "title": "Associate Product Manager",
+            "company": "FinSolutions",
+            "location": "New York, NY, USA",
+            "industry": "Finance",
+            "seniority": "Associate",
+            "employmentType": "Full-time",
+            "description": "Support product roadmap, coordinate with stakeholders, and assist senior PMs.",
+            "postedDate": "2025-11-07",
+            "applyUrl": "https://finsolutions.com/careers/034"
+          },
+          {
+            "id": "job-035",
+            "title": "Mid-level Mechanical Engineer",
+            "company": "AutoMotiveX",
+            "location": "Detroit, MI, USA",
+            "industry": "Automotive",
+            "seniority": "Mid-level",
+            "employmentType": "Full-time",
+            "description": "Design and test automotive components and support production processes.",
+            "postedDate": "2025-11-09",
+            "applyUrl": "https://automotivex.com/careers/035"
+          },
+          {
+            "id": "job-036",
+            "title": "Associate HR Specialist",
+            "company": "PeopleFirst Corp",
+            "location": "Seattle, WA, USA",
+            "industry": "Human Resources",
+            "seniority": "Associate",
+            "employmentType": "Full-time",
+            "description": "Assist with recruitment, onboarding, and HR administration tasks.",
+            "postedDate": "2025-11-08",
+            "applyUrl": "https://peoplefirst.com/careers/036"
+          },
+          {
+            "id": "job-037",
+            "title": "Mid-level Marketing Coordinator",
+            "company": "BrandBoost",
+            "location": "Los Angeles, CA, USA",
+            "industry": "Marketing & Advertising",
+            "seniority": "Mid-level",
+            "employmentType": "Full-time",
+            "description": "Coordinate campaigns, create marketing content, and track campaign performance.",
+            "postedDate": "2025-11-09",
+            "applyUrl": "https://brandboost.com/careers/037"
+          },
+          {
+            "id": "job-038",
+            "title": "Associate Business Analyst",
+            "company": "Consultix",
+            "location": "Boston, MA, USA",
+            "industry": "Consulting",
+            "seniority": "Associate",
+            "employmentType": "Full-time",
+            "description": "Support project analysis, gather requirements, and assist senior analysts.",
+            "postedDate": "2025-11-07",
+            "applyUrl": "https://consultix.com/careers/038"
+          },
+          {
+            "id": "job-039",
+            "title": "Mid-level DevOps Engineer",
+            "company": "CloudMatrix",
+            "location": "San Francisco, CA, USA",
+            "industry": "Technology",
+            "seniority": "Mid-level",
+            "employmentType": "Full-time",
+            "description": "Manage cloud infrastructure, CI/CD pipelines, and collaborate with development teams.",
+            "postedDate": "2025-11-08",
+            "applyUrl": "https://cloudmatrix.com/careers/039"
+          },
+          {
+            "id": "job-040",
+            "title": "Associate QA Engineer",
+            "company": "SoftTest Solutions",
+            "location": "Austin, TX, USA",
+            "industry": "Software Testing",
+            "seniority": "Associate",
+            "employmentType": "Full-time",
+            "description": "Test software applications, report bugs, and work closely with developers to ensure quality.",
+            "postedDate": "2025-11-09",
+            "applyUrl": "https://softtest.com/careers/040"
+          }
+        ]
+      },
+      {
+        "jobs": [
+          {
+            "id": "job-041",
+            "title": "Entry-level Software Developer",
+            "company": "CodeCrafters",
+            "location": "Denver, CO, USA",
+            "industry": "Technology",
+            "seniority": "Entry-level",
+            "employmentType": "Full-time",
+            "description": "Assist in building web applications and learn best practices from senior developers.",
+            "postedDate": "2025-11-09",
+            "applyUrl": "https://codecrafters.com/careers/041"
+          },
+          {
+            "id": "job-042",
+            "title": "Senior Data Scientist",
+            "company": "DataMinds",
+            "location": "San Francisco, CA, USA",
+            "industry": "Technology & Analytics",
+            "seniority": "Senior",
+            "employmentType": "Full-time",
+            "description": "Lead data science projects, mentor junior analysts, and build predictive models.",
+            "postedDate": "2025-11-08",
+            "applyUrl": "https://dataminds.com/careers/042"
+          },
+          {
+            "id": "job-043",
+            "title": "Entry-level Graphic Designer",
+            "company": "VisualWorks",
+            "location": "Los Angeles, CA, USA",
+            "industry": "Design",
+            "seniority": "Entry-level",
+            "employmentType": "Full-time",
+            "description": "Create graphics for digital campaigns and assist senior designers with client projects.",
+            "postedDate": "2025-11-09",
+            "applyUrl": "https://visualworks.com/careers/043"
+          },
+          {
+            "id": "job-044",
+            "title": "Senior Product Manager",
+            "company": "FinTechPros",
+            "location": "New York, NY, USA",
+            "industry": "Finance",
+            "seniority": "Senior",
+            "employmentType": "Full-time",
+            "description": "Lead product development, manage cross-functional teams, and define strategic roadmaps.",
+            "postedDate": "2025-11-07",
+            "applyUrl": "https://fintechpros.com/careers/044"
+          },
+          {
+            "id": "job-045",
+            "title": "Entry-level Marketing Associate",
+            "company": "AdVenture Media",
+            "location": "Chicago, IL, USA",
+            "industry": "Marketing & Advertising",
+            "seniority": "Entry-level",
+            "employmentType": "Full-time",
+            "description": "Assist with campaigns, create content, and track performance metrics.",
+            "postedDate": "2025-11-09",
+            "applyUrl": "https://adventuremedia.com/careers/045"
+          },
+          {
+            "id": "job-046",
+            "title": "Senior Mechanical Engineer",
+            "company": "AutoWorks Inc.",
+            "location": "Detroit, MI, USA",
+            "industry": "Automotive",
+            "seniority": "Senior",
+            "employmentType": "Full-time",
+            "description": "Lead design of automotive systems and mentor junior engineers.",
+            "postedDate": "2025-11-08",
+            "applyUrl": "https://autoworks.com/careers/046"
+          },
+          {
+            "id": "job-047",
+            "title": "Entry-level HR Assistant",
+            "company": "PeopleConnect",
+            "location": "Seattle, WA, USA",
+            "industry": "Human Resources",
+            "seniority": "Entry-level",
+            "employmentType": "Full-time",
+            "description": "Support recruitment, onboarding, and HR documentation tasks.",
+            "postedDate": "2025-11-09",
+            "applyUrl": "https://peopleconnect.com/careers/047"
+          },
+          {
+            "id": "job-048",
+            "title": "Senior UX Designer",
+            "company": "PixelVision",
+            "location": "Austin, TX, USA",
+            "industry": "Design",
+            "seniority": "Senior",
+            "employmentType": "Full-time",
+            "description": "Lead UX design strategy, mentor junior designers, and improve user experiences.",
+            "postedDate": "2025-11-07",
+            "applyUrl": "https://pixelvision.com/careers/048"
+          },
+          {
+            "id": "job-049",
+            "title": "Entry-level Business Analyst",
+            "company": "ConsultCorp",
+            "location": "Boston, MA, USA",
+            "industry": "Consulting",
+            "seniority": "Entry-level",
+            "employmentType": "Full-time",
+            "description": "Support senior analysts, gather requirements, and help with reporting.",
+            "postedDate": "2025-11-08",
+            "applyUrl": "https://consultcorp.com/careers/049"
+          },
+          {
+            "id": "job-050",
+            "title": "Senior DevOps Engineer",
+            "company": "CloudSphere",
+            "location": "San Francisco, CA, USA",
+            "industry": "Technology",
+            "seniority": "Senior",
+            "employmentType": "Full-time",
+            "description": "Oversee cloud infrastructure, mentor mid-level engineers, and optimize CI/CD pipelines.",
+            "postedDate": "2025-11-09",
+            "applyUrl": "https://cloudsphere.com/careers/050"
+          }
+        ]
+      } 
+];
+
+// Define file path
+const filePath = path.join(process.cwd(), 'mock_linkedin_jobs.json');
+
+// Write JSON file
+fs.writeFileSync(filePath, JSON.stringify({ jobs }, null, 2));
+
+console.log(`Mock LinkedIn jobs dataset created at: ${filePath}`);
